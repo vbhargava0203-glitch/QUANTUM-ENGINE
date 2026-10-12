@@ -1,0 +1,11 @@
+(() => {
+  class ControlLandscape {
+    constructor(canvas,onHover){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.data=null;this.onHover=onHover;new ResizeObserver(()=>this.draw()).observe(canvas);canvas.addEventListener('pointermove',event=>this.hover(event));canvas.addEventListener('pointerleave',()=>this.onHover?.(null));}
+    update(data){this.data=data;this.draw();}
+    resize(){const r=this.canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);this.canvas.width=Math.max(1,r.width*d);this.canvas.height=Math.max(1,r.height*d);this.ctx.setTransform(d,0,0,d,0,0);return r;}
+    color(value){const v=Math.max(0,Math.min(1,value));const r=Math.round(10+205*v),g=Math.round(26+190*Math.pow(v,.75)),b=Math.round(55+155*(1-v));return `rgb(${r} ${g} ${b})`;}
+    draw(){const rect=this.resize(),c=this.ctx,w=rect.width,h=rect.height;c.clearRect(0,0,w,h);if(!this.data)return;const {values,amplitudes,durations}=this.data,top=15,left=34,right=10,bottom=27,iw=w-left-right,ih=h-top-bottom,rows=values.length,cols=values[0].length;for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){c.fillStyle=this.color(values[row][col]);c.fillRect(left+col*iw/cols,top+row*ih/rows,Math.ceil(iw/cols)+.5,Math.ceil(ih/rows)+.5);}c.strokeStyle='#6f8cab';c.lineWidth=1;c.strokeRect(left,top,iw,ih);c.fillStyle='#8b9fb9';c.font='8px IBM Plex Mono, monospace';c.fillText(durations.at(-1).toFixed(2),2,top+8);c.fillText(durations[0].toFixed(2),2,top+ih);c.fillText('duration',2,top+ih+14);c.fillText(amplitudes[0].toFixed(1),left,top+ih+14);c.fillText(amplitudes.at(-1).toFixed(1),left+iw-18,top+ih+14);c.fillText('amplitude →',left+iw/2-29,h-3);}
+    hover(event){if(!this.data)return;const r=this.canvas.getBoundingClientRect(),x=event.clientX-r.left,y=event.clientY-r.top,top=15,left=34,right=10,bottom=27,iw=r.width-left-right,ih=r.height-top-bottom;if(x<left||x>left+iw||y<top||y>top+ih){this.onHover?.(null);return;}const col=Math.min(this.data.amplitudes.length-1,Math.floor((x-left)/iw*this.data.amplitudes.length)),row=Math.min(this.data.durations.length-1,Math.floor((y-top)/ih*this.data.durations.length));this.onHover?.({amplitude:this.data.amplitudes[col],duration:this.data.durations[row],fidelity:this.data.values[row][col]});}
+  }
+  QG.ControlLandscape=ControlLandscape;
+})();

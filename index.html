@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070a10">
+  <title>Quantum Geometry &amp; Control Engine</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <section id="intro" class="intro" aria-labelledby="intro-title">
+    <canvas id="intro-canvas" aria-hidden="true"></canvas>
+    <div class="intro-copy">
+      <p class="eyebrow">COMPUTATIONAL QUANTUM-CONTROL LABORATORY</p>
+      <h1 id="intro-title">QUANTUM GEOMETRY<br><span>&amp; CONTROL ENGINE</span></h1>
+      <p class="intro-subtitle">Explore the geometry of quantum states. Discover optimal paths. Control quantum evolution.</p>
+      <p class="intro-detail">A local mathematical laboratory for state-space geometry and single-qubit control.</p>
+      <button id="enter-lab" class="hero-button">ENTER LABORATORY <span aria-hidden="true">→</span></button>
+      <p class="intro-footnote">LOCAL SIMULATION · ℏ = 1 · NO HARDWARE CONNECTED</p>
+    </div>
+  </section>
+
+  <main id="app" class="app is-hidden" aria-label="Quantum Geometry and Control Engine">
+    <header class="topbar">
+      <button class="brand" data-nav="overview" aria-label="Open overview"><span class="brand-mark">QG</span><span>CONTROL ENGINE</span></button>
+      <nav aria-label="Primary navigation">
+        <button class="nav-button active" data-nav="overview">OVERVIEW</button>
+        <button class="nav-button" data-nav="experiment">EXPERIMENT</button>
+        <button class="nav-button" data-nav="state-space">STATE SPACE</button>
+        <button class="nav-button" data-nav="control">CONTROL</button>
+        <button class="nav-button" data-nav="pulse">PULSE DESIGN</button>
+        <button class="nav-button" data-nav="optimization">OPTIMIZATION</button>
+        <button class="nav-button" data-nav="analysis">ANALYSIS</button>
+        <button class="nav-button" data-nav="mathematics">MATHEMATICS</button>
+        <button class="nav-button" data-nav="log">EXPERIMENT LOG</button>
+      </nav>
+      <div class="topbar-actions">
+        <button class="icon-button" id="discovery-button" title="Generate a valid candidate configuration">DISCOVERY</button>
+        <button class="icon-button" id="research-toggle" aria-pressed="false">RESEARCH</button>
+      </div>
+    </header>
+
+    <section class="workspace" aria-label="Experiment workspace">
+      <aside class="config-panel panel" aria-label="Experiment configuration">
+        <div class="panel-heading"><span class="section-index">01</span><h2>CONFIGURATION</h2></div>
+        <label class="field-label" for="experiment-name">EXPERIMENT NAME</label>
+        <input id="experiment-name" class="text-input" maxlength="60" value="Geometric state transfer">
+        <div class="system-badge"><span>QUANTUM SYSTEM</span><strong>Single qubit</strong><small>LocalSimulator</small></div>
+        <label class="field-label" for="preset-experiment">PRESET EXPERIMENT</label>
+        <label class="select-wrap"><select id="preset-experiment"><option value="">Select a guided configuration…</option><option value="north-equator">01 · North Pole → Equator</option><option value="zero-one">02 · |0⟩ → |1⟩</option><option value="zero-plus">03 · |0⟩ → |+⟩</option><option value="minimum-time">04 · Minimum-Time State Transfer</option><option value="noise-robustness">05 · Noise Robustness</option><option value="control-energy">06 · Control-Energy Optimization</option></select></label>
+
+        <fieldset class="state-group">
+          <legend>INITIAL STATE <button class="why-button" data-why="state">WHY?</button></legend>
+          <div id="initial-presets" class="preset-row" role="group" aria-label="Initial state presets">
+            <button data-preset="zero" class="preset active">|0⟩</button><button data-preset="one" class="preset">|1⟩</button><button data-preset="plus" class="preset">|+⟩</button><button data-preset="minus" class="preset">|−⟩</button><button data-preset="custom" class="preset">CUSTOM</button>
+          </div>
+          <div class="parameter-grid">
+            <label>θ <output id="initial-theta-out">0.0°</output><input id="initial-theta" type="range" min="0" max="180" value="0" step="0.1"></label>
+            <label>φ <output id="initial-phi-out">0.0°</output><input id="initial-phi" type="range" min="-180" max="180" value="0" step="0.1"></label>
+          </div>
+          <div class="state-readout" id="initial-state-readout"></div>
+          <div class="gate-row" aria-label="Apply a quantum gate to the initial state"><span>APPLY GATE</span><button data-gate="X">X</button><button data-gate="Y">Y</button><button data-gate="Z">Z</button><button data-gate="H">H</button></div>
+        </fieldset>
+
+        <fieldset class="state-group">
+          <legend>TARGET STATE <button class="why-button" data-why="target">WHY?</button></legend>
+          <div id="target-presets" class="preset-row" role="group" aria-label="Target state presets">
+            <button data-preset="zero" class="preset">|0⟩</button><button data-preset="one" class="preset">|1⟩</button><button data-preset="plus" class="preset active">|+⟩</button><button data-preset="minus" class="preset">|−⟩</button><button data-preset="custom" class="preset">CUSTOM</button>
+          </div>
+          <div class="parameter-grid">
+            <label>θ <output id="target-theta-out">90.0°</output><input id="target-theta" type="range" min="0" max="180" value="90" step="0.1"></label>
+            <label>φ <output id="target-phi-out">0.0°</output><input id="target-phi" type="range" min="-180" max="180" value="0" step="0.1"></label>
+          </div>
+          <div class="state-readout" id="target-state-readout"></div>
+        </fieldset>
+
+        <fieldset class="state-group compact">
+          <legend>NOISE MODEL <button class="why-button" data-why="noise">WHY?</button></legend>
+          <label class="select-wrap"><select id="noise-model" aria-label="Noise model"><option value="none">None</option><option value="bit-flip">Bit flip</option><option value="phase-flip">Phase flip</option><option value="depolarizing">Depolarizing</option><option value="dephasing">Dephasing</option></select></label>
+          <label class="range-line">STRENGTH <output id="noise-out">0.0%</output><input id="noise-strength" type="range" min="0" max="0.2" value="0" step="0.0025"></label>
+        </fieldset>
+      </aside>
+
+      <section class="visual-panel panel" aria-label="Bloch sphere visualization">
+        <div class="visual-header"><div><p class="kicker">STATE-SPACE GEOMETRY</p><h2>BLOCH SPHERE</h2></div><div class="legend"><span class="legend-initial">INITIAL</span><span class="legend-target">TARGET</span><span class="legend-current">CURRENT</span><span class="legend-optimized">OPTIMIZED</span></div></div>
+        <div class="sphere-stage"><canvas id="bloch-canvas" aria-label="Interactive Bloch sphere. Drag to rotate, wheel to zoom." tabindex="0"></canvas><div class="sphere-overlay top-left">PURE-STATE MANIFOLD<br><small>SU(2) / U(1)</small></div><div class="sphere-overlay bottom-right" id="time-readout">t = 0.000</div></div>
+        <div class="camera-row"><button class="minor-button" id="reset-camera">RESET VIEW</button><label class="toggle"><input id="auto-rotate" type="checkbox"><span></span>AUTO-ROTATE</label><button class="minor-button" id="baseline-toggle" aria-pressed="true">BASELINE</button><button class="minor-button active-trajectory" id="optimized-toggle" aria-pressed="true">OPTIMIZED</button></div>
+        <div class="playback" aria-label="Trajectory playback"><button id="play-button" class="play-button" aria-label="Play simulation">▶</button><button id="restart-button" class="minor-button" aria-label="Restart simulation">RESTART</button><input id="timeline" type="range" min="0" max="1000" value="0" aria-label="Evolution time"><output id="timeline-out">0%</output></div>
+      </section>
+
+      <aside class="metrics-panel panel" aria-label="Live metrics">
+        <div class="panel-heading"><span class="section-index">02</span><h2>STATE GEOMETRY</h2></div>
+        <div class="metric-stack">
+          <div class="metric"><span>STATE DISTANCE <button class="why-button" data-why="distance">WHY?</button></span><strong id="distance-value">0.0000 rad</strong><small id="distance-note">identical states</small></div>
+          <div class="metric"><span>FIDELITY</span><strong id="fidelity-value">100.00%</strong><div class="metric-bar"><i id="fidelity-bar"></i></div></div>
+          <div class="metric"><span>FINAL FIDELITY</span><strong id="final-fidelity-value">—</strong><small>simulated endpoint</small></div>
+          <div class="metric"><span>CONTROL COST</span><strong id="cost-value">—</strong><small>simulation units</small></div>
+          <div class="metric"><span>MIXED-STATE PURITY <button class="why-button" data-why="purity">WHY?</button></span><strong id="purity-value">1.0000</strong><small id="entropy-value">S(ρ) = 0.0000 bits</small></div>
+        </div>
+        <dl class="coordinate-list"><div><dt>INITIAL r</dt><dd id="initial-coordinates">(0.000, 0.000, 1.000)</dd></div><div><dt>TARGET r</dt><dd id="target-coordinates">(1.000, 0.000, 0.000)</dd></div><div><dt>ANGULAR SEPARATION</dt><dd id="angular-separation">1.5708 rad</dd></div></dl>
+        <div class="validation" id="validation"><p>VALIDATION</p><span>✓ Normalization</span><span>✓ Hermiticity</span><span>✓ Numerical stability</span></div>
+        <button id="save-experiment" class="wide-button">SAVE EXPERIMENT</button>
+      </aside>
+    </section>
+
+    <section class="analysis-strip panel" aria-label="Live scientific analysis">
+      <div class="analysis-heading"><span class="section-index">03</span><div><p class="kicker">LIVE SCIENTIFIC ANALYSIS</p><h2>CONTROL FIELD &amp; OPTIMIZATION</h2></div></div>
+      <div class="control-cluster">
+        <label>AMPLITUDE <output id="amplitude-out">1.000</output><input id="amplitude" type="range" min="0" max="8" value="1" step="0.01"></label>
+        <label>DETUNING <output id="frequency-out">0.000</output><input id="frequency" type="range" min="-8" max="8" value="0" step="0.01"></label>
+        <label>PHASE <output id="phase-out">0.0°</output><input id="phase" type="range" min="-180" max="180" value="0" step="1"></label>
+        <label>DURATION <output id="duration-out">1.571</output><input id="duration" type="range" min="0.1" max="12" value="1.5708" step="0.01"></label>
+      </div>
+      <div class="objective-cluster"><label for="objective">OBJECTIVE</label><select id="objective"><option value="fidelity">Maximum final fidelity</option><option value="time">Minimum time</option><option value="energy">Minimum control energy</option><option value="balanced">Balanced</option><option value="robustness">Maximum robustness</option></select><button id="run-button" class="run-button">RUN EXPERIMENT</button><button id="optimize-button" class="wide-button">GEOMETRY OPTIMIZE</button></div>
+      <div class="optimizer-readout"><span>ITERATION <strong id="iteration-value">0</strong></span><span>CURRENT COST <strong id="current-cost">—</strong></span><span>BEST COST <strong id="best-cost">—</strong></span><span>STATUS <strong id="optimizer-status">READY</strong></span></div>
+    </section>
+
+    <section class="pulse-panel panel" id="pulse-section" aria-label="Piecewise pulse program">
+      <div class="section-heading"><div><p class="kicker">PIECEWISE HAMILTONIAN CONTROL</p><h2>PULSE PROGRAM</h2></div><label class="toggle program-toggle"><input id="pulse-program-enabled" type="checkbox"><span></span>USE PROGRAM</label></div>
+      <p class="scientific-note pulse-note">When enabled, the simulator evolves through each constant Hamiltonian segment in order. Segment fields replace the single global control field for the baseline trajectory.</p>
+      <div class="pulse-grid" id="pulse-grid">
+        <div class="pulse-labels"><span>SEGMENT</span><span>AMPLITUDE</span><span>DETUNING</span><span>PHASE</span><span>DURATION</span></div>
+        <div class="pulse-row"><strong>01</strong><label><input id="pulse-1-amplitude" type="number" min="0" max="8" step="0.05" value="1.20"></label><label><input id="pulse-1-frequency" type="number" min="-8" max="8" step="0.05" value="0.00"></label><label><input id="pulse-1-phase" type="number" min="-180" max="180" step="1" value="0"></label><label><input id="pulse-1-duration" type="number" min="0.02" max="12" step="0.02" value="0.60"></label></div>
+        <div class="pulse-row"><strong>02</strong><label><input id="pulse-2-amplitude" type="number" min="0" max="8" step="0.05" value="1.20"></label><label><input id="pulse-2-frequency" type="number" min="-8" max="8" step="0.05" value="0.00"></label><label><input id="pulse-2-phase" type="number" min="-180" max="180" step="1" value="90"></label><label><input id="pulse-2-duration" type="number" min="0.02" max="12" step="0.02" value="0.60"></label></div>
+        <div class="pulse-row"><strong>03</strong><label><input id="pulse-3-amplitude" type="number" min="0" max="8" step="0.05" value="0.70"></label><label><input id="pulse-3-frequency" type="number" min="-8" max="8" step="0.05" value="0.30"></label><label><input id="pulse-3-phase" type="number" min="-180" max="180" step="1" value="180"></label><label><input id="pulse-3-duration" type="number" min="0.02" max="12" step="0.02" value="0.35"></label></div>
+      </div>
+      <div class="pulse-actions"><button id="clear-pulse-program" class="minor-button">DISABLE PROGRAM</button><span id="pulse-summary">Three constant-field segments · total 1.550 simulation units</span></div>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel charts-panel" id="analysis-section"><div class="section-heading"><div><p class="kicker">ANALYSIS</p><h2>SIMULATION TRACE</h2></div><p class="scientific-note">Values arise from the local numerical simulation.</p></div><div class="charts-grid"><figure><figcaption>Fidelity vs time <span>target overlap</span></figcaption><canvas id="fidelity-chart"></canvas></figure><figure><figcaption>Control amplitude vs time <span>simulation units</span></figcaption><canvas id="control-chart"></canvas></figure><figure><figcaption>State distance vs time <span>Bures angle [rad]</span></figcaption><canvas id="distance-chart"></canvas></figure><figure><figcaption>Optimization cost <span>coordinate-search iteration</span></figcaption><canvas id="cost-chart"></canvas></figure><figure><figcaption>Noise vs fidelity <span>selected channel strength p</span></figcaption><canvas id="noise-chart"></canvas></figure></div></article>
+      <article class="panel mathematics-panel" id="mathematics-section"><div class="section-heading"><div><p class="kicker">LIVE MATHEMATICAL NOTEBOOK</p><h2>MATHEMATICS</h2></div><select id="math-level" aria-label="Mathematics explanation level"><option value="beginner">BEGINNER</option><option value="technical">TECHNICAL</option><option value="mathematical">MATHEMATICAL</option></select></div><div id="math-content" class="math-content"></div></article>
+      <article class="panel landscape-panel"><div class="section-heading"><div><p class="kicker">PARAMETER SWEEP</p><h2>CONTROL LANDSCAPE</h2></div><button id="refresh-landscape" class="minor-button">COMPUTE</button></div><p class="scientific-note">Final fidelity over amplitude × duration; the selected noise model is included.</p><canvas id="landscape-canvas" aria-label="Control fidelity landscape"></canvas><output id="landscape-readout">Press COMPUTE to evaluate the landscape.</output></article>
+      <article class="panel measurement-panel"><div class="section-heading"><div><p class="kicker">MEASUREMENT LAB</p><h2>SHOT SAMPLER</h2></div><button id="measure-button" class="minor-button">MEASURE</button></div><p class="scientific-note">Samples the current simulated Bloch state; repeated results are stochastic.</p><div class="measurement-controls"><label>BASIS<select id="measurement-basis"><option value="z">Z basis</option><option value="x">X basis</option><option value="y">Y basis</option></select></label><label>SHOTS<input id="measurement-shots" type="number" min="1" max="100000" value="256"></label></div><div class="measurement-results"><span>EXPECTED P(+)<strong id="measurement-probability">1.0000</strong></span><span>OBSERVED +<strong id="measurement-plus">—</strong></span><span>OBSERVED −<strong id="measurement-minus">—</strong></span></div></article>
+      <article class="panel export-panel"><div class="section-heading"><div><p class="kicker">REPRODUCIBLE RESULTS</p><h2>EXPORT</h2></div></div><p class="scientific-note">Export the exact local settings and trace; no account or server is involved.</p><div class="export-actions"><button id="export-json" class="wide-button">DOWNLOAD JSON</button><button id="export-csv" class="minor-button">DOWNLOAD TRACE CSV</button></div></article>
+      <article class="panel notebook-panel"><div class="section-heading"><div><p class="kicker">RESEARCH NOTEBOOK</p><h2>WORKING NOTES</h2></div><button id="save-notes" class="minor-button">SAVE NOTES</button></div><label>HYPOTHESIS<textarea id="note-hypothesis" placeholder="What do you expect to observe?"></textarea></label><label>OBSERVATION<textarea id="note-observation" placeholder="What did the simulation show?"></textarea></label><label>INTERPRETATION / NEXT QUESTION<textarea id="note-interpretation" placeholder="How should this guide the next experiment?"></textarea></label></article>
+      <article class="panel log-panel" id="log-section"><div class="section-heading"><div><p class="kicker">LOCAL EXPERIMENT HISTORY</p><h2>EXPERIMENT LOG</h2></div><button id="clear-log" class="minor-button danger">CLEAR LOG</button></div><div id="experiment-log" class="experiment-log"><p class="empty-log">No saved experiments yet.</p></div></article>
+    </section>
+
+    <section id="research-panel" class="research-panel panel is-hidden" aria-label="Research data">
+      <div class="section-heading"><div><p class="kicker">DEBUG / RESEARCH MODE</p><h2>RAW SIMULATION STATE</h2></div><button id="close-research" class="minor-button">CLOSE</button></div><pre id="research-output"></pre>
+    </section>
+    <footer>QGCE v1.0 · SINGLE-QUBIT LOCAL SIMULATOR · <span>Results are computational simulations, not hardware measurements.</span></footer>
+  </main>
+  <dialog id="info-dialog"><button class="dialog-close" aria-label="Close explanation">×</button><p class="kicker" id="dialog-kicker">CONCEPT</p><h2 id="dialog-title"></h2><div id="dialog-content"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="src/core/complex.js"></script><script src="src/core/vector.js"></script><script src="src/core/matrix.js"></script>
+  <script src="src/quantum/state.js"></script><script src="src/quantum/density.js"></script><script src="src/quantum/gates.js"></script>
+  <script src="src/geometry/bloch.js"></script><script src="src/geometry/distance.js"></script>
+  <script src="src/simulation/noise.js"></script><script src="src/simulation/validation.js"></script><script src="src/simulation/simulator.js"></script>
+  <script src="src/control/optimizer.js"></script><script src="src/storage/experiments.js"></script>
+  <script src="src/visualization/blochSphere.js"></script><script src="src/visualization/charts.js"></script><script src="src/visualization/landscape.js"></script><script src="src/app.js"></script>
+</body>
+</html>
